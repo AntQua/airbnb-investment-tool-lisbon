@@ -4,7 +4,7 @@ import joblib
 import json
 
 # Carregar modelo e dados auxiliares
-modelo = joblib.load("model/modelo_regressao.pkl")
+modelo = joblib.load("model/modelo.pkl")
 with open("model/dropdown_values.json", "r", encoding="utf-8") as f:
     valores_dropdown = json.load(f)
 colunas_modelo = pd.read_csv("model/model_columns.csv").squeeze().tolist()

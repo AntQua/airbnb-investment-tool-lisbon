@@ -4,6 +4,7 @@ beds
 bathrooms
 number_of_reviews
 review_scores_rating
+estimated_occupancy_l365d
 atratividade_bairro
 dist_centro_km
 tipologia_ordinal

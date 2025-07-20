@@ -30,8 +30,7 @@ df_dummies = pd.get_dummies(df, columns=['neighbourhood_cleansed', 'host_is_supe
 
 # Features numéricas + dummies
 features_numericas = [
-    'accommodates', 'beds', 'bathrooms', 'number_of_reviews',
-    'review_scores_rating', 'atratividade_bairro', 'dist_centro_km', 'tipologia_ordinal'
+    'accommodates', 'beds', 'bathrooms', 'number_of_reviews', 'review_scores_rating', 'estimated_occupancy_l365d', 'atratividade_bairro', 'dist_centro_km', 'tipologia_ordinal'
 ]
 X = df_dummies[features_numericas +
                [col for col in df_dummies.columns if col.startswith('neighbourhood_cleansed_') or col.startswith('host_is_superhost_')]]
@@ -71,14 +70,14 @@ modelo.fit(X_train, y_train)
 # print(X_test.groupby('tipologia_ordinal')['erro'].mean())
 
 # Output
-# print("✅ Modelo treinado com sucesso")
+print("✅ Modelo treinado com sucesso")
 # print(f"R²: {r2:.3f}")
 # print(f"RMSE: {rmse:.2f} €")
 
 # Guardar modelo
 os.makedirs("model", exist_ok=True)
-joblib.dump(modelo, "model/modelo_regressao.pkl")
-print("📦 Modelo salvo em model/modelo_regressao.pkl")
+joblib.dump(modelo, "model/modelo.pkl")
+print("📦 Modelo salvo em model/modelo.pkl")
 
 # ✅ Guardar as colunas usadas no modelo
 X.columns.to_series().to_csv("model/model_columns.csv", index=False)
