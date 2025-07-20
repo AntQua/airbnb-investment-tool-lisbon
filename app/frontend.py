@@ -3,6 +3,16 @@ import pandas as pd
 import joblib
 import json
 
+from risk_simulation import simular_risco
+
+# Inicializar variáveis de estado
+if "previsao_feita" not in st.session_state:
+    st.session_state.previsao_feita = False
+if "preco_previsto" not in st.session_state:
+    st.session_state.preco_previsto = 0.0
+
+df = pd.read_csv("data/listings_lisboa_final.csv")
+
 # Carregar modelo e dados auxiliares
 modelo = joblib.load("model/modelo.pkl")
 with open("model/dropdown_values.json", "r", encoding="utf-8") as f:
@@ -50,5 +60,53 @@ if st.button("Prever preço"):
     # Previsão
     preco_previsto = modelo.predict(df_input)[0]
     preco_previsto = max(0, preco_previsto)
+    st.session_state.preco_previsto = preco_previsto
+    st.session_state.previsao_feita = True
 
-    st.success(f"💶 Preço previsto: **{preco_previsto:.2f} €** por noite")
+if st.session_state.previsao_feita:
+    st.success(f"💶 Preço previsto: **{st.session_state.preco_previsto:.2f} €** por noite")
+
+    st.markdown("Deseja realizar uma Simulação e Análise de Risco com base neste preço previsto?")
+    simular = st.radio("Seleciona uma opção:", ["Não", "Sim"], index=0, key="sim_risco")
+
+    if simular == "Sim":
+        custo_input = st.number_input("💡 Introduz os custos médios por noite (€)", min_value=0.0, step=1.0, key="custo_diario")
+
+        if st.button("📊 Simular Risco"):
+            resultado = simular_risco(df, freguesia, tipologia, st.session_state.preco_previsto, custo_input)
+
+            if resultado is None:
+                st.warning("⚠️ Dados insuficientes para simular o risco com esta combinação.")
+            else:
+                st.markdown("## 🔍 Análise de Risco com Simulação Monte Carlo")
+
+                lucro_medio = resultado['mean_profit']
+                lucro_texto = "lucro" if lucro_medio >= 0 else "prejuízo"
+                direcao_texto = "positivo" if lucro_medio >= 0 else "negativo"
+
+                # Mostrar ocupação usada na simulação
+                ocupacao_media = df[
+                    (df["neighbourhood_cleansed"] == freguesia) &
+                    (df["tipologia"] == tipologia)
+                ]["estimated_occupancy_l365d"].mean()
+
+                st.markdown(f"""
+                ✅ Um {tipologia} em {freguesia} tem um {lucro_texto} anual esperado **{direcao_texto}**, mesmo com variações na ocupação e preço.
+
+                📅 A simulação foi realizada assumindo uma ocupação anual média de **{ocupacao_media:.0f} dias**, com base em imóveis semelhantes.
+
+                📉 Probabilidade de prejuízo: **{resultado['prob_loss'] * 100:.1f}%**
+
+                💰 Com 75% de probabilidade, o {lucro_texto} anual situa-se entre **{resultado['percentiles'][1]:.0f} €** e **{resultado['percentiles'][3]:.0f} €**.
+
+                ⚠️ O {lucro_texto} pode variar significativamente — desvio padrão: **{resultado['std_profit']:.0f} €**
+                """)
+
+
+
+
+
+
+
+
+    
