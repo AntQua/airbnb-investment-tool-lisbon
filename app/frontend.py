@@ -25,7 +25,7 @@ ordem_tipologias = {'T0': 0, 'T1': 1, 'T2': 2, 'T3': 3, 'T4': 4, 'T5+': 5}
 
 # Interface
 st.set_page_config(page_title="Previsão Airbnb Lisboa", layout="centered")
-st.title("🧠 Previsão de Preço Diário - Airbnb Lisboa")
+st.title("🏨 Airbnb Investment Tool 📈")
 st.markdown("Simule o preço diário estimado para um novo alojamento local (Airbnb) em Lisboa.")
 
 # Inputs principais
@@ -61,7 +61,7 @@ if st.button("Prever preço"):
 if st.session_state.previsao_feita and st.session_state.preco_previsto is not None:
     st.success(f"💶 Preço previsto: **{st.session_state.preco_previsto:.2f} €** por noite")
 
-    st.markdown("Deseja realizar uma Simulação e Análise de Risco com base neste preço previsto?")
+    st.markdown("Desejas realizar uma Simulação e Análise de Risco com base neste preço previsto?")
     simular = st.radio("Seleciona uma opção:", ["Não", "Sim"], index=0, key="sim_risco")
 
     if simular == "Sim":
