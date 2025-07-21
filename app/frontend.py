@@ -72,28 +72,27 @@ if st.session_state.previsao_feita:
     if simular == "Sim":
         custo_input = st.number_input("💡 Introduz os custos médios por noite (€)", min_value=0.0, step=1.0, key="custo_diario")
 
+        pct_preco = st.number_input("📈 Variação percentual no preço estimado (%)", min_value=-100.0, max_value=100.0, step=1.0, value=0.0)
+        pct_ocupacao = st.number_input("📉 Variação percentual na ocupação anual (%)", min_value=-100.0, max_value=100.0, step=1.0, value=0.0)
+
+
         if st.button("📊 Simular Risco"):
-            resultado = simular_risco(df, freguesia, tipologia, st.session_state.preco_previsto, custo_input)
+            resultado = simular_risco(df, freguesia, tipologia, st.session_state.preco_previsto, custo_input,
+                              delta_price_pct=pct_preco, delta_occupancy_pct=pct_ocupacao)
 
             if resultado is None:
                 st.warning("⚠️ Dados insuficientes para simular o risco com esta combinação.")
             else:
-                st.markdown("## 🔍 Análise de Risco com Simulação Monte Carlo")
-
                 lucro_medio = resultado['mean_profit']
                 lucro_texto = "lucro" if lucro_medio >= 0 else "prejuízo"
                 direcao_texto = "positivo" if lucro_medio >= 0 else "negativo"
 
-                # Mostrar ocupação usada na simulação
-                ocupacao_media = df[
-                    (df["neighbourhood_cleansed"] == freguesia) &
-                    (df["tipologia"] == tipologia)
-                ]["estimated_occupancy_l365d"].mean()
+                st.markdown("## 🔍 Análise de Risco com Simulação")
 
                 st.markdown(f"""
-                ✅ Um {tipologia} em {freguesia} tem um {lucro_texto} anual esperado **{direcao_texto}**, mesmo com variações na ocupação e preço.
+                ✅ Um {tipologia} em {freguesia} tem um {lucro_texto} anual esperado **{direcao_texto}**.
 
-                📅 A simulação foi realizada assumindo uma ocupação anual média de **{ocupacao_media:.0f} dias**, com base em imóveis semelhantes.
+                📅 A simulação foi realizada com base numa ocupação média de **{resultado['occupancy_mean']:.0f} dias/ano** e preço de **{resultado['adjusted_price']:.2f} €** por noite.
 
                 📉 Probabilidade de prejuízo: **{resultado['prob_loss'] * 100:.1f}%**
 
@@ -101,12 +100,3 @@ if st.session_state.previsao_feita:
 
                 ⚠️ O {lucro_texto} pode variar significativamente — desvio padrão: **{resultado['std_profit']:.0f} €**
                 """)
-
-
-
-
-
-
-
-
-    
