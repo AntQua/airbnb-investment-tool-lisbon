@@ -1,6 +1,6 @@
-# Lisbon Airbnb Price Estimator
+# Airbnb Investment Tool
 
-🧠 **Streamlit App for Predicting Airbnb Daily Prices in Lisbon**
+🧠 **Streamlit App for Predicting Airbnb Daily Prices and investment risk in Lisbon**
 
 This project is a simple yet practical application designed to simulate the daily rental price of an Airbnb property located in Lisbon. It was developed as part of the postgraduate program in **Data Science for Business Strategy (NOVA FCT)**.
 
